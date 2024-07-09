@@ -3,11 +3,11 @@ const express = require('express');
 const router = express.Router()
 
 
-
+const anjay = "ini value dari anjay.";
 
 let initWebRoutes = (app) => {
     router.get('/', (req, res) => {
-        res.render('index');
+        res.render('index', {anjay : anjay});
     });
 
 
