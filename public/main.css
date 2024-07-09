@@ -1,0 +1,21 @@
+.box {
+    width: 100px;
+    height: 100px;
+    background-color: red;
+}
+
+.wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 0 10px 0;
+    background-color: #edf2f4;
+}
+
+.whitespace{
+    display: flex;
+    width: 20px;
+}
+
+.storage-zones .pull-zones {
+}
