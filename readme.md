@@ -4,6 +4,8 @@
 
 A BunnyCDN unofficial Web Interface to ease with image hosting (imgBox like). The idea is to directly upload image(s) and get the <img> link tag.
 
+<img width="928" alt="image" src="https://github.com/Faralha/BunnyCDN-Upload-Hub/assets/69440085/9cf8e310-83e8-43ad-a440-2da32d9f95f9">
+
 
 ## Run Locally
 
