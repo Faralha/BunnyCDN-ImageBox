@@ -10,13 +10,13 @@ const STORAGE_ZONE_NAME = process.env.STORAGE_NAME;
 // const FILE_PATH = '/path/to/your/file/upload.txt';
 const ACCESS_KEY = process.env.STORAGE_API;
 
-function uploadFile(FILE_PATH, FILENAME_TO_UPLOAD) {
+function uploadFile(FILE_PATH, UPLOADED_FILE_PATH, FILENAME_TO_UPLOAD) {
         const encodedFileName = encodeURIComponent(FILENAME_TO_UPLOAD);
         const readStream = fs.createReadStream(FILE_PATH);
         const options = {
             method: 'PUT',
             host: HOSTNAME,
-            path: `/${STORAGE_ZONE_NAME}/${encodedFileName}`,
+            path: `/${STORAGE_ZONE_NAME}/${UPLOADED_FILE_PATH}/${encodedFileName}`,
             headers: {
                 'AccessKey': ACCESS_KEY,
                 'Content-type': 'application/octet-stream',
@@ -34,10 +34,6 @@ function uploadFile(FILE_PATH, FILENAME_TO_UPLOAD) {
         });
 
         readStream.pipe(req);
-    }
-    
-    const main = async () => {
-        await uploadFile();
     }
 
 module.exports = {

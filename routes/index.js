@@ -43,15 +43,18 @@ let initWebRoutes = (app) => {
 
 
     // FILE UPLOAD
-    const upload = multer({ dest: 'uploads/' });
-    router.post('/upload', upload.single('file'), async (req, res) => {
-        const { path: tempPath, originalname } = req.file;
-
+    const upload = multer({ dest: '/uploads/'});
+    router.post('/upload', upload.array('myFiles', 20), async (req, res) => {
+        
         try {
-            const filePath = req.body.finalPathInput + '/' + originalname;
-            console.log(filePath);
-            await uploadFile(tempPath, filePath);
-            fs.unlinkSync(tempPath);
+
+            const filePath = req.body.finalPathInput;
+
+            for (const file of req.files) {
+                const { path: tempPath, originalname } = file;
+                await uploadFile(tempPath, filePath, originalname);
+                await fs.promises.unlink(tempPath);
+            }
             res.send('File uploaded.');
 
         } catch (error) {

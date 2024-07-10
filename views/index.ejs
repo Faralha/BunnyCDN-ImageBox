@@ -25,8 +25,13 @@
             <div class="container d-flex flex-column justify-content-start align-items-start p-2 gap-2" style="max-height: 45vh; overflow-y: auto;">
                 <% if (files && files.length > 0) { %>
                     <% files.forEach(function(file) { %>
-                        <button class="file file-wrapper container btn btn-light justify-content-center" onclick="clickedFolder('<%= file.ObjectName %>')">
-                            <p class="p-3 m-0 fw-semibold" style="text-align: left;"><%= file.ObjectName %></p>
+                        <button class="file file-wrapper container btn btn-light justify-content-start d-flex flex-row align-items-start" onclick="clickedFolder('<%= file.ObjectName %>')">
+                            <p class="p-2 m-0">
+                                <svg width="15" height="15" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M64 480H448c35.3 0 64-28.7 64-64V160c0-35.3-28.7-64-64-64H288c-10.1 0-19.6-4.7-25.6-12.8L243.2 57.6C231.1 41.5 212.1 32 192 32H64C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64z"/></svg>
+                            </p>
+                            <p class="p-2 m-0 fw-semibold" style="text-align: left;">
+                                <%= file.ObjectName %>
+                            </p>
                         </button>
                     <% }); %>
                 <% } else { %>
@@ -40,12 +45,16 @@
         <div class="whitespace"></div>
 
         <div class="d-flex flex-column flex-fill">
+
+        <!-- UPLOAD -->
         <h3>Upload</h3>
-            <p id="finalPath"><span id="folder"></span>/<span id="chapters"></span></p>
+
+            <p><span id="finalPath"></span></p>
+
             <form method="post" action="/upload" enctype="multipart/form-data">
                 <input type="hidden" id="finalPathInput" name="finalPathInput" value="">
                 <input type="text" name="Chapter Name" id="ChapterName">
-                <input type="file" name="file" id="file">
+                <input type="file" name="myFiles" id="file" multiple="multiple">
                 <input type="submit" value="submit">
             </form>
         </div>
@@ -55,22 +64,26 @@
     <script>
 
         let finalPath = '';
+        let folderName = '';
+        let chapterName = '';
 
         function path(){
-            finalPath = document.getElementById('finalPath').textContent;
+            finalPath = '';
+            finalPath = encodeURIComponent(folderName) + '/' + encodeURIComponent(chapterName);
             document.getElementById('finalPathInput').value = finalPath;
-            console.log(finalPath)
+            document.getElementById('finalPath').textContent = finalPath;
         }
 
-        function clickedFolder(folderName) {
-            document.getElementById('folder').innerText = folderName;
+        function clickedFolder(folderNameStr) {
+            // document.getElementById('folder').textContent = folderNameStr;
+            folderName = folderNameStr
             path();
         }
 
         document.getElementById('ChapterName').addEventListener('input', function() {
-            document.getElementById('chapters').textContent = this.value;
+            // document.getElementById('chapters').textContent = this.value;
+            chapterName = this.value;
             path();
-            console.log(finalPath);
         })
         
     </script>
