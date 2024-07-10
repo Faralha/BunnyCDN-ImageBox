@@ -8,16 +8,14 @@ const HOSTNAME = REGION ? `${REGION}.${BASE_HOSTNAME}` : BASE_HOSTNAME;
 const STORAGE_ZONE_NAME = process.env.STORAGE_NAME;
 const ACCESS_KEY = process.env.STORAGE_API;
 
-function uploadFile(FILE_PATH, UPLOADED_FILE_PATH, FILENAME_TO_UPLOAD) {
+function uploadFile(FILE_PATH, PATH) {
     return new Promise((resolve, reject) => {
-        const encodedFileName = encodeURIComponent(FILENAME_TO_UPLOAD);
         const readStream = fs.createReadStream(FILE_PATH);
-        const path = UPLOADED_FILE_PATH ? `/${UPLOADED_FILE_PATH}/${encodedFileName}` : `${encodedFileName}`;
 
         const options = {
             method: 'PUT',
             host: HOSTNAME,
-            path: `/${STORAGE_ZONE_NAME}/${path}`,
+            path: `/${STORAGE_ZONE_NAME}/${PATH}`,
             headers: {
                 'AccessKey': ACCESS_KEY,
                 'Content-type': 'application/octet-stream',

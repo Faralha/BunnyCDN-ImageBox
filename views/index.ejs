@@ -12,90 +12,115 @@
 
     <!-- MESSAGE ALERT -->
     <% if (message && status == 'success') { %>
-        <div class="auto-dismiss alert alert-success alert-dismissible fade show" role="alert" style="position: fixed; width: 100vw;">
+        <div class="auto-dismiss alert alert-success alert-dismissible fade show" role="alert" style="position: fixed; width: 100vw; z-index: 3;">
             <strong><%= message %></strong>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     <% } else if (message && status == 'error') { %>
-        <div class="auto-dismiss alert alert-danger alert-dismissible fade show" role="alert" style="position: fixed; width: 100vw;">
+        <div class="auto-dismiss alert alert-danger alert-dismissible fade show" role="alert" style="position: fixed; width: 100vw; z-index: 3;">
             <strong><%= message %></strong>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     <% } %>
 
 
-    <!-- NAVBAR -->
-    <div class="container" style="height: 3rem;"></div>
-    <div class="container">
-        <h1>BunnyCDN ImgBox</h1>
-        <p class="m-0">Selected Storage: <span class="fw-semibold"><%= storageName %></span></p>
-        <p class="m-0">Region: <span class="fw-semibold"><%= region.toUpperCase() %></span></p>
-    </div>
+    <!-- UPLOAD FINISHED SCREEN -->
+    <% if(links.length > 0){ %>
+        <div class="card links" id="linksCard" style="max-height: 60%; z-index: 4;">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <p class="m-0 fw-bold">Links</p>
+                <button type="button" class="btn-close" aria-label="Close" onclick="closeCard()"></button>
+            </div>
+            <div class="card-body">
+                <% links.forEach(function(link) { %>
+                    <p class="card-text linkText">&lt;img src="<%= link %>"&gt;</p>
+                <% }); %>
+                <button class="btn btn-primary btn-copy" style="width: 100%;">Copy</button>
+            </div>
+        </div>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                toggleBlurEffect(true);
+            });
+        </script>
+    <% } %>
 
-    <div class="container whitespace" style="height: 20px;"></div>
-    
-    <div class="container d-flex flex-row justify-content-center">
-        <div class="pull-zones d-flex flex-column flex-fill">
 
-            <!-- FILE MANAGER/VIEWER -->
-            <div class="d-flex">
-                <h2>Folders</h2>
+    <div class="main-content ">
+        <!-- NAVBAR -->
+        <div class="container" style="height: 3rem;"></div>
+        <div class="container">
+            <h1>BunnyCDN ImgBox</h1>
+            <p class="m-0">Selected Storage: <span class="fw-semibold"><%= storageName %></span></p>
+            <p class="m-0">Region: <span class="fw-semibold"><%= region.toUpperCase() %></span></p>
+            <p class="m-0">Pull Zones: <span class="fw-semibold"><%= pullZones %></span></p>
+        </div>
+
+        <div class="container whitespace" style="height: 20px;"></div>
+        
+        <div class="container d-flex flex-row justify-content-center">
+            <div class="pull-zones d-flex flex-column flex-fill">
+
+                <!-- FILE MANAGER/VIEWER -->
+                <div class="d-flex">
+                    <h2>Folders</h2>
+                </div>
+
+                <div class="container d-flex flex-column justify-content-start align-items-start p-2 gap-2" style="max-height: 45vh; overflow-y: auto;">
+                    <% if (files && files.length > 0) { %>
+                        <% files.forEach(function(file) { %>
+                            <button class="file file-wrapper container btn btn-light justify-content-start d-flex flex-row align-items-start" onclick="clickedFolder('<%= file.ObjectName %>')">
+                                <p class="p-2 m-0">
+                                    <svg width="15" height="15" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M64 480H448c35.3 0 64-28.7 64-64V160c0-35.3-28.7-64-64-64H288c-10.1 0-19.6-4.7-25.6-12.8L243.2 57.6C231.1 41.5 212.1 32 192 32H64C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64z"/></svg>
+                                </p>
+                                <p class="p-2 m-0 fw-semibold" style="text-align: left;">
+                                    <%= file.ObjectName %>
+                                </p>
+                            </button>
+                        <% }); %>
+                    <% } else { %>
+                        <p>No files found.</p>
+                    <% } %>
+
+                </div>
             </div>
 
-            <div class="container d-flex flex-column justify-content-start align-items-start p-2 gap-2" style="max-height: 45vh; overflow-y: auto;">
-                <% if (files && files.length > 0) { %>
-                    <% files.forEach(function(file) { %>
-                        <button class="file file-wrapper container btn btn-light justify-content-start d-flex flex-row align-items-start" onclick="clickedFolder('<%= file.ObjectName %>')">
-                            <p class="p-2 m-0">
-                                <svg width="15" height="15" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M64 480H448c35.3 0 64-28.7 64-64V160c0-35.3-28.7-64-64-64H288c-10.1 0-19.6-4.7-25.6-12.8L243.2 57.6C231.1 41.5 212.1 32 192 32H64C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64z"/></svg>
-                            </p>
-                            <p class="p-2 m-0 fw-semibold" style="text-align: left;">
-                                <%= file.ObjectName %>
-                            </p>
-                        </button>
-                    <% }); %>
-                <% } else { %>
-                    <p>No files found.</p>
-                <% } %>
+            <div class="whitespace"></div>
+
+            <div class="d-flex flex-column flex-fill">
+
+            <!-- UPLOAD -->
+            <h3>Upload</h3>
+
+                <p><span id="finalPath"></span></p>
+
+                <form method="post" action="/upload" enctype="multipart/form-data" class="uploadForm">
+                    <input type="hidden" id="finalPathInput" name="finalPathInput" value="">
+                    <div class="mb-3">
+                        <label for="ChapterName" class="form-label">Chapter Name</label>
+                        <input class="form-control" type="text" name="Chapter Name" id="ChapterName">
+                    </div>
+                    <div class="mb-3">
+                        <input class="form-control" type="file" name="myFiles" id="file" multiple="multiple">
+                    </div>
+                    <div>
+                        <input class="form-control btn btn-primary" type="submit" value="submit">
+                    </div>
+                </form>
+
+                <!-- Progress Bar -->
+                <div class="progress" style="display:none;">
+                    <div class="progress-bar" role="progressbar" style="width: 0%;" id="uploadProgressBar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                </div>
 
             </div>
         </div>
 
-        <div class="whitespace"></div>
 
-        <div class="d-flex flex-column flex-fill">
-
-        <!-- UPLOAD -->
-        <h3>Upload</h3>
-
-            <p><span id="finalPath"></span></p>
-
-            <form method="post" action="/upload" enctype="multipart/form-data" class="uploadForm">
-                <input type="hidden" id="finalPathInput" name="finalPathInput" value="">
-                <div class="mb-3">
-                    <label for="ChapterName" class="form-label">Chapter Name</label>
-                    <input class="form-control" type="text" name="Chapter Name" id="ChapterName">
-                </div>
-                <div class="mb-3">
-                    <input class="form-control" type="file" name="myFiles" id="file" multiple="multiple">
-                </div>
-                <div>
-                    <input class="form-control btn btn-primary" type="submit" value="submit">
-                </div>
-            </form>
-
-            <!-- Progress Bar -->
-            <div class="progress" style="display:none;">
-                <div class="progress-bar" role="progressbar" style="width: 0%;" id="uploadProgressBar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
-            </div>
-
+        <!-- CREDIT FOOTER -->
+        <div class="container d-flex justify-content-center pt-4">
+            <p>Made with love by <a href="https://github.com/faralha" target="_blank"><span class="fw-bold">Faralha.</span></a></p>
         </div>
-    </div>
-
-
-    <!-- CREDIT FOOTER -->
-    <div class="container d-flex justify-content-center pt-4">
-        <p>Made with love by <a href="https://github.com/faralha" target="_blank"><span class="fw-bold">Faralha.</span></a></p>
     </div>
 
 
@@ -107,7 +132,11 @@
 
         function path(){
             finalPath = '';
-            finalPath = encodeURIComponent(folderName) + '/' + encodeURIComponent(chapterName);
+            if(chapterName == ''){
+                finalPath = encodeURIComponent(folderName);
+            } else {
+                finalPath = encodeURIComponent(folderName) + '/' + encodeURIComponent(chapterName);
+            }
             document.getElementById('finalPathInput').value = finalPath;
             document.getElementById('finalPath').textContent = finalPath;
         }
@@ -134,6 +163,42 @@
         });
     });
 
+
+    function closeCard() {
+        document.getElementById('linksCard').style.display = 'none';
+        toggleBlurEffect(false);
+    }
+
+
+    function toggleBlurEffect(show){
+        const content = document.querySelector('.main-content');
+        const linksCard = document.getElementById('linksCard');
+
+        if(show){
+            content.classList.add('blur-effect');
+        } else {
+            content.classList.remove('blur-effect');
+        }
+    }
+
+    function copyToClipboard(){
+        let links = document.querySelectorAll('.linkText');
+        let linksText = '';
+        links.forEach(link => {
+            linksText += link.textContent + '\n';
+        });
+
+
+        navigator.clipboard.writeText(linksText).then(() => {
+            console.log('Links copied to clipboard!');
+        }).catch(err => {
+            console.error('Failed to copy links: ', err);
+        });
+
+        alert('Copied to clipboard');
+    }
+
+    document.querySelector('.btn-copy').addEventListener('click', copyToClipboard);
 
     document.getElementById('uploadForm').addEventListener('submit', function(e) {
     e.preventDefault(); // Prevent the default form submission

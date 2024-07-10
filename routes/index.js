@@ -5,7 +5,6 @@ const multer = require('multer');
 const fs = require('fs');
 
 const {
-    fetchPullZones,
     fetchStorageFiles
 } = require('../functions/fetch');
 
@@ -13,20 +12,12 @@ const {
     uploadFile
 } = require('../functions/upload');
 
-const dummyData = [
-    { Name: "Dallas-01", Region: "US" },
-    { Name: "Singapore-04", Region: "AS" },
-    { Name: "Jakarta-01", Region: "AS" },
-    { Name: "Bangkok-02", Region: "AS" },
-    { Name: "Europe-09", Region: "ER"}
-];
+let urlLinks = [];
 
-const anjay = "ini value dari anjay.";
 
 let initWebRoutes = (app) => {
     router.get('/', async (req, res) => {
-        // const pullZones = await fetchPullZones();
-        const pullZones = dummyData;
+
         const message = req.query.message;
         const status = req.query.status;
 
@@ -34,11 +25,13 @@ let initWebRoutes = (app) => {
         
         res.render('index', {
             storageId: req.session.storageId,
+            pullZones: process.env.PULL_ZONES,
             storageName: process.env.STORAGE_NAME,
             region: process.env.REGION,
             files: storageFiles,
             message: message,
             status: status,
+            links: urlLinks
         });
     });
 
@@ -48,14 +41,26 @@ let initWebRoutes = (app) => {
     router.post('/upload', upload.array('myFiles', 20), async (req, res) => {
         
         try {
-
+            urlLinks = [];
             const filePath = req.body.finalPathInput;
+            console.log(filePath);
 
             for (const file of req.files) {
                 const { path: tempPath, originalname } = file;
-                await uploadFile(tempPath, filePath, originalname);
+                const encodedFileName = encodeURIComponent(originalname);
+                // Check if filepath is in root or subfolder
+                const path = filePath ? `${filePath}/${encodedFileName}` : `${encodedFileName}`;
+
+                await uploadFile(tempPath, path);
                 await fs.promises.unlink(tempPath);
+
+                urlLinks.push(`https://${process.env.PULL_ZONES}/${path}`);
             }
+
+            for (const path of urlLinks) {
+                console.log(path);
+            }
+
             res.redirect('/?message=Upload%20Success&status=success');
 
         } catch (error) {
@@ -89,15 +94,12 @@ let initWebRoutes = (app) => {
 
     // REGION FETCH
     router.get('/region', async (req, res) => {
-        // const data = await fetchPullZones();
 
-        const data = dummyData;
         const storageId = req.session.storageId;
 
         const region = data.find((item) => item.Name === storageId);
         const item = region ? region.Region : "Not Found.";
         req.session.region = item;
-        // console.log("Region: ", item);
         return res.status(200).json({ region: item });
     });
 
