@@ -27,17 +27,18 @@ let initWebRoutes = (app) => {
     router.get('/', async (req, res) => {
         // const pullZones = await fetchPullZones();
         const pullZones = dummyData;
-        const storageFiles = await fetchStorageFiles();
+        const message = req.query.message;
+        const status = req.query.status;
 
-        if (!req.session.storageId) {
-            req.session.storageId = "Not Selected.";
-        }
+        const storageFiles = await fetchStorageFiles();
         
         res.render('index', {
             storageId: req.session.storageId,
             storageName: process.env.STORAGE_NAME,
             region: process.env.REGION,
             files: storageFiles,
+            message: message,
+            status: status,
         });
     });
 
@@ -55,11 +56,11 @@ let initWebRoutes = (app) => {
                 await uploadFile(tempPath, filePath, originalname);
                 await fs.promises.unlink(tempPath);
             }
-            res.send('File uploaded.');
+            res.redirect('/?message=Upload%20Success&status=success');
 
         } catch (error) {
             console.log(error);
-            res.status(500).json({ message: "Error." });
+            res.redirect('/?message=Upload%20Failed&status=error');
         }
     })
 
