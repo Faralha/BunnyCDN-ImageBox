@@ -1,7 +1,6 @@
 
 # BunnyCDN ImgBox
 
-WARNING! DO NOT DEPLOY ON WEBSITE/SERVER! This app was intended for local-use, as such no authentication system is implemented. 
 
 A BunnyCDN unofficial Web Interface to ease with image hosting (imgBox like). The idea is to directly upload image(s) and get the <img> link tag.
 
