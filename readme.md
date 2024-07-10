@@ -1,11 +1,9 @@
+WARNING! DO NOT DEPLOY ON WEBSITE/SERVER! This app was intended for local-use, as such no authentication system is implemented. 
 
 # BunnyCDN ImgBox
 
-WARNING! DO NOT DEPLOY ON WEBSITE/SERVER! This app was intended for local-use, as such no authentication system is implemented. 
-
 A BunnyCDN unofficial Web Interface to ease with image hosting (imgBox like). The idea is to directly upload image(s) and get the <img> link tag.
 
-<img width="928" alt="image" src="https://github.com/Faralha/BunnyCDN-Upload-Hub/assets/69440085/9cf8e310-83e8-43ad-a440-2da32d9f95f9">
 
 
 ## Run Locally
@@ -13,13 +11,13 @@ A BunnyCDN unofficial Web Interface to ease with image hosting (imgBox like). Th
 Clone the project
 
 ```bash
-  git clone https://github.com/Faralha/BunnyCDN-Upload-Hub.git
+  git clone https://github.com/Faralha/BunnyCDN-ImageBox.git
 ```
 
 Go to the project directory
 
 ```bash
-  cd BunnyCDN-Upload-Hub
+  cd BunnyCDN-ImageBox
 ```
 
 Install dependencies
@@ -36,7 +34,9 @@ REGION :
 
 STORAGE_API : 
 
-STORAGE_NAME 
+STORAGE_NAME :
+
+PULL_ZONES :
 ```
 
 Start the server
@@ -57,6 +57,9 @@ To run this project, you will need to add the following environment variables to
 `STORAGE_API` : Storage API Keys/Password, NOT ACCOUNT API KEYS (keys differ with each Storage Zones.)
 
 `STORAGE_NAME` : The name of Storage Zone which you will use
+
+`PULL_ZONES` : Pull Zones which assigned to your Storage Zones
+
 
 ## Features
 
