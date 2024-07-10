@@ -7,28 +7,31 @@
     <link rel="stylesheet" href="/main.css">
     <title>Index</title>
 </head>
-<body>
+<body style="background-color: #edf2f4;">
     <div class="container" style="height: 5rem;"></div>
     <div class="container">
         <h1>BunnyCDN ImgBox</h1>
-        <p>Selected Storage Zones: <span id="storageId">None</span></p>
-        <p>Region: <span id="region">None</span></p>
+        <p>Selected Storage Name: <%= storageName %></p>
+        <p>Region: <%= region.toUpperCase() %></p>
     </div>
 
     <div class="container whitespace" style="height: 20px;"></div>
     
-    <!-- Selector -->
-    <div class="container d-flex flex-row">
+    <div class="container d-flex flex-row justify-content-center">
         <div class="pull-zones d-flex flex-column flex-fill">
-            <h2>Storage Zones</h2>
+            <!-- FILE MANAGER/VIEWER -->
+            <h2>Folders</h2>
 
-            <div class="container wrapper d-flex justify-content-start">
-                <% pullZones.forEach(function(item) { %>
-                    <form action="/storageId" method="post" id="storageForm" class="storageForm">
-                        <input type="hidden" name="storageId" value="<%= item.Name %>" id="storageId">
-                        <input type="submit" value="<%= item.Name %>">
-                    </form>
-                <% }); %>
+            <div class="container d-flex flex-column justify-content-start align-items-start p-2 gap-2" style="max-height: 45vh; overflow-y: auto;">
+                <% if (files && files.length > 0) { %>
+                    <% files.forEach(function(file) { %>
+                        <button class="file file-wrapper container btn btn-light justify-content-center" onclick="clickedFolder('<%= file.ObjectName %>')">
+                            <p class="p-3 m-0 fw-semibold" style="text-align: left;"><%= file.ObjectName %></p>
+                        </button>
+                    <% }); %>
+                <% } else { %>
+                    <p>No files found.</p>
+                <% } %>
 
                 <!-- <div class="box"></div> -->
             </div>
@@ -36,78 +39,41 @@
 
         <div class="whitespace"></div>
 
-    </div>
-
-
-    <div class="container d-flex flex-column">
+        <div class="d-flex flex-column flex-fill">
         <h3>Upload</h3>
-        <label for="ChapterName">Upload Images</label>
-        <input type="text" name="Chapter Name" id="ChapterName">
-        <input type="file" name="Upload Images..." id="imageHandler">
-        <input type="submit" value="submit">
+            <p id="finalPath"><span id="folder"></span>/<span id="chapters"></span></p>
+            <form method="post" action="/upload" enctype="multipart/form-data">
+                <input type="hidden" id="finalPathInput" name="finalPathInput" value="">
+                <input type="text" name="Chapter Name" id="ChapterName">
+                <input type="file" name="file" id="file">
+                <input type="submit" value="submit">
+            </form>
+        </div>
     </div>
 
 
     <script>
 
-    function fetchStorageId() {
-        fetch('/storageId', {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-            },
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log(data.storageId);
-            document.getElementById('storageId').innerText = data.storageId;
-        })
-        .catch(error => console.error('Error fetching storageId:', error));
-    }
+        let finalPath = '';
 
-    function fetchRegion() {
-        fetch('/region', {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-            },
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log(data.storageId);
-            document.getElementById('region').innerText = data.region;
-        })
-        .catch(error => console.error('Error fetching region:', error));
-    }
+        function path(){
+            finalPath = document.getElementById('finalPath').textContent;
+            document.getElementById('finalPathInput').value = finalPath;
+            console.log(finalPath)
+        }
 
-    fetchStorageId();
-    fetchRegion();
+        function clickedFolder(folderName) {
+            document.getElementById('folder').innerText = folderName;
+            path();
+        }
+
+        document.getElementById('ChapterName').addEventListener('input', function() {
+            document.getElementById('chapters').textContent = this.value;
+            path();
+            console.log(finalPath);
+        })
         
-    document.querySelectorAll('.storageForm').forEach(form => {
-        form.addEventListener('submit', async function(event) {
-            event.preventDefault();
+    </script>
 
-            // Initialize an object to hold the form data
-            let formData = {};
-
-            // Example of adding specific form data; adjust according to your form structure
-            formData['storageId'] = this.querySelector('input[name="storageId"]').value; // Adjust the selector as needed
-
-            // Fetch API call using the formData object
-            fetch('/storageId', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData),
-            })
-
-            await fetchStorageId();
-            await fetchRegion();
-        });
-    });
-</script>
-
-    
 </body>
 </html>

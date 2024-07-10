@@ -1,8 +1,17 @@
 const { Router } = require('express');
 const express = require('express');
 const router = express.Router();
+const multer = require('multer');
+const fs = require('fs');
 
-const { fetchPullZones } = require('../functions/fetch');
+const {
+    fetchPullZones,
+    fetchStorageFiles
+} = require('../functions/fetch');
+
+const {
+    uploadFile
+} = require('../functions/upload');
 
 const dummyData = [
     { Name: "Dallas-01", Region: "US" },
@@ -18,30 +27,61 @@ let initWebRoutes = (app) => {
     router.get('/', async (req, res) => {
         // const pullZones = await fetchPullZones();
         const pullZones = dummyData;
+        const storageFiles = await fetchStorageFiles();
 
         if (!req.session.storageId) {
             req.session.storageId = "Not Selected.";
         }
         
         res.render('index', {
-            anjay: anjay,
-            pullZones: pullZones,
-            storageId: req.session.storageId
+            storageId: req.session.storageId,
+            storageName: process.env.STORAGE_NAME,
+            region: process.env.REGION,
+            files: storageFiles,
         });
     });
+
+
+    // FILE UPLOAD
+    const upload = multer({ dest: 'uploads/' });
+    router.post('/upload', upload.single('file'), async (req, res) => {
+        const { path: tempPath, originalname } = req.file;
+
+        try {
+            const filePath = req.body.finalPathInput + '/' + originalname;
+            console.log(filePath);
+            await uploadFile(tempPath, filePath);
+            fs.unlinkSync(tempPath);
+            res.send('File uploaded.');
+
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ message: "Error." });
+        }
+    })
+
+
 
     // STORAGE ID FETCH AND RESPONSE
     router.post('/storageId', (req, res) => {
         const storageId = req.body.storageId;
-        // console.log(storageId);
         req.session.storageId = storageId;
         res.status(200).json({ message: "OK." });
     });
 
     router.get('/storageId', (req, res) => {
         res.status(200).json({ storageId: req.session.storageId });
-        // console.log("Storage ID: ", req.session.storageId);
     });
+
+
+
+    // STORAGE FILES FETCH
+    router.get('/files', async (req, res) => {
+        const data = await fetchStorageFiles();
+        return res.status(200).json({ data: data });
+    })
+
+
 
     // REGION FETCH
     router.get('/region', async (req, res) => {

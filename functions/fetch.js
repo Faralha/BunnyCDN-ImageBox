@@ -39,8 +39,30 @@ async function fetchStorageZone() {
     }
 }
 
+async function fetchStorageFiles() {
+    const region = process.env.REGION;
+    const storageName = process.env.STORAGE_NAME;
+    try {
+        const url = `https://${region}.storage.bunnycdn.com/${storageName}/`;
+        const options = {
+            method: 'GET',
+            headers: {
+                accept: 'application/json',
+                AccessKey: process.env.STORAGE_API
+            }
+        };
+
+        const response = await fetch(url, options);
+        const data = await response.json();
+        // console.log(data);
+        return data;
+    } catch (error) {
+        console.log(error);
+    }
+}
 
 module.exports = {
     fetchPullZones,
-    fetchStorageZone
+    fetchStorageZone,
+    fetchStorageFiles
 }

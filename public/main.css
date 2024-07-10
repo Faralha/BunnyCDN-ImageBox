@@ -9,7 +9,11 @@
     justify-content: center;
     align-items: center;
     padding: 10px 0 10px 0;
-    background-color: #edf2f4;
+    background-color: inherit;
+}
+
+.file-wrapper{
+    background-color: white;
 }
 
 .whitespace{
