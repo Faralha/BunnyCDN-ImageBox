@@ -5,6 +5,10 @@ WARNING! DO NOT DEPLOY ON WEBSITE/SERVER! This app was intended for local-use, a
 A BunnyCDN unofficial Web Interface to ease with image hosting (imgBox like). The idea is to directly upload image(s) and get the <img> link tag.
 
 
+<img width="928" alt="Screenshot 2024-07-10 202953" src="https://github.com/Faralha/BunnyCDN-ImageBox/assets/69440085/130f60f7-817d-49e2-b55c-38890a531a3e">
+
+<img width="929" alt="image" src="https://github.com/Faralha/BunnyCDN-ImageBox/assets/69440085/808f533f-29dd-405c-ac16-3f701e576607">
+
 
 ## Run Locally
 
