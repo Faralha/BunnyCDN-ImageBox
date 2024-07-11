@@ -12,6 +12,8 @@ const {
     uploadFile
 } = require('../functions/upload');
 
+const {compressImage} = require('../functions/compress');
+
 let urlLinks = [];
 
 
@@ -51,9 +53,16 @@ let initWebRoutes = (app) => {
                 // Check if filepath is in root or subfolder
                 const path = filePath ? `${filePath}/${encodedFileName}` : `${encodedFileName}`;
 
-                await uploadFile(tempPath, path);
-                await fs.promises.unlink(tempPath);
 
+                // Compress Images to WebP with 80% quality
+                const tempOutput = `CMP-${tempPath}`;
+                await compressImage(tempPath, tempOutput);
+
+
+                await uploadFile(tempOutput, path);
+                await fs.promises.unlink(tempOutput);
+
+                // Store URL links
                 urlLinks.push(`https://${process.env.PULL_ZONES}/${path}`);
             }
 
