@@ -12,7 +12,10 @@ const {
     uploadFile
 } = require('../functions/upload');
 
+const {compressImage} = require('../functions/compress');
+
 let urlLinks = [];
+let linkData = [];
 
 
 let initWebRoutes = (app) => {
@@ -31,7 +34,7 @@ let initWebRoutes = (app) => {
             files: storageFiles,
             message: message,
             status: status,
-            links: urlLinks
+            links: linkData
         });
     });
 
@@ -39,34 +42,40 @@ let initWebRoutes = (app) => {
     // FILE UPLOAD
     const upload = multer({ dest: '/uploads/'});
     router.post('/upload', upload.array('myFiles', 20), async (req, res) => {
+
+        const filePath = req.body.finalPathInput;
+
+        const processFiles = req.files.map(file => {
+            return new Promise(async (resolve, reject) => {
+                try {
+                    const { path: tempPath, originalname } = file;
+                    const encodedFileName = encodeURIComponent(originalname);
+                    const path = filePath ? `${filePath}/${encodedFileName}` : `${encodedFileName}`;
+
+                    await compressImage(tempPath);
+
+                    await uploadFile(tempPath, path);
+                    await fs.promises.unlink(tempPath);
+
+                    const urlLink = `https://${process.env.PULL_ZONES}/${path}`;
+                    resolve(urlLink);
+                } catch (error) {
+                    reject(error);
+                }
+            });
+        });
+
+        Promise.all(processFiles)
+            .then(urlLinks => {
+                linkData = urlLinks;
+                // urlLinks.forEach(urlLink => console.log(urlLink));
+                res.redirect('/?message=Upload successful.&status=success');
+            })
+            .catch(error => {
+                console.error("An error occurred:", error);
+                res.redirect('/?message=Upload failed.&status=error');
+            });
         
-        try {
-            urlLinks = [];
-            const filePath = req.body.finalPathInput;
-            console.log(filePath);
-
-            for (const file of req.files) {
-                const { path: tempPath, originalname } = file;
-                const encodedFileName = encodeURIComponent(originalname);
-                // Check if filepath is in root or subfolder
-                const path = filePath ? `${filePath}/${encodedFileName}` : `${encodedFileName}`;
-
-                await uploadFile(tempPath, path);
-                await fs.promises.unlink(tempPath);
-
-                urlLinks.push(`https://${process.env.PULL_ZONES}/${path}`);
-            }
-
-            for (const path of urlLinks) {
-                console.log(path);
-            }
-
-            res.redirect('/?message=Upload%20Success&status=success');
-
-        } catch (error) {
-            console.log(error);
-            res.redirect('/?message=Upload%20Failed&status=error');
-        }
     })
 
 
